@@ -1,0 +1,48 @@
+---
+
+- name: Install python36
+  yum:
+    name:
+      - python36
+    state: latest
+
+- name: download backend release
+  get_url:
+    url:  https://github.com/NexusPolarius/hzproject/releases/download/hzproject_2/code.tar.gz
+    dest: /home/vagrant
+
+- name: extract archive
+  shell: "tar -zxvf 'code.tar.gz'"
+
+- name: chmod
+  shell: chmod 775 /home/vagrant/code/manage.py
+  
+- name: install requirements
+  pip:
+    requirements: /home/vagrant/code/requirements.txt
+    executable: pip3
+  
+- name: install gunicorn
+  yum: name=python-gunicorn state=latest
+
+- name: copy setting django
+  template: src=templates/.env dest=/home/vagrant/code/.env mode=0775
+
+- name: copy gunicorn.socket
+  template: src=templates/gunicorn.socket dest=/etc/systemd/system/gunicorn.socket mode=0775
+
+- name: copy gunicorn.service
+  template: src=templates/gunicorn.service dest=/etc/systemd/system/gunicorn.service mode=0775
+      
+- name: run gunicorn
+  command: systemctl enable --now gunicorn.socket
+  
+- name: set defaults python36
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - "alternatives --install /usr/bin/python python /usr/bin/python2 50"
+    - "alternatives --install /usr/bin/python python /usr/bin/python3.6 60"
+    
+- name: selinux off
+  shell: "setenforce 0"
+

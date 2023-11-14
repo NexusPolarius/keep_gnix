@@ -1,0 +1,12 @@
+DEBUG=False
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_HOST='{{ ip.db }}'
+DB_PORT=5432
+SECRET_KEY='AGHAFGSGBJN JK&*^^&$GKHJHGJ67576'
+MAILGUN_API_KEY='3c1b36a*****************-*******dae4a3'
+MAILGUN_WEBHOOK_SIGNING_KEY='3c1b36a*****************-*******dae4a3'
+STATIC='/mnt/project_files/static'
+MEDIA='/mnt/project_files/media'

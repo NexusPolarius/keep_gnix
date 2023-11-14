@@ -1,0 +1,24 @@
+---
+
+- name: sleep 30 seconds 
+  ansible.builtin.wait_for:
+    timeout: 30
+  delegate_to: storage
+
+    
+- name: install targetcli
+  yum:
+    name:
+      - targetcli
+    state: latest 
+    
+- name: configure target
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - "systemctl enable target.service"
+    - "systemctl start target.service"
+    - "targetcli /backstores/block create disk01 /dev/sdb"
+    - "targetcli /iscsi create iqn.2023-09.otus:storage.target00"
+    - "targetcli /iscsi/iqn.2023-09.otus:storage.target00/tpg1/luns create /backstores/block/disk01 lun=1"  
+    - "targetcli /iscsi/iqn.2023-09.otus:storage.target00/tpg1/acls create {{ initiatorname_back1 }}"
+    - "targetcli /iscsi/iqn.2023-09.otus:storage.target00/tpg1/acls create {{ initiatorname_back2 }}"

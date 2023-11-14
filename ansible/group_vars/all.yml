@@ -1,0 +1,22 @@
+---
+hosts:
+   h1: gnix1
+   h2: gnix2
+   h3: back1
+   h4: back2
+   h5: storage
+   h6: bd
+
+ip:
+  gnix1: 192.168.56.10
+  gnix2: 192.168.56.11
+  back1: 192.168.56.12
+  back2: 192.168.56.13
+  storage: 192.168.56.14
+  db: 192.168.56.15
+  vip: 192.168.56.20
+  
+hosts_tml: 'hosts.j2'
+hosts_file: /etc/hosts
+
+nginx_conf_file: /etc/nginx/conf.d

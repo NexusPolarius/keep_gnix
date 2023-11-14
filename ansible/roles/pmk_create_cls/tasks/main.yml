@@ -1,0 +1,11 @@
+---
+
+- name: create cluster
+  shell: |
+    pcs cluster auth {{ hosts.h3 }} {{ hosts.h4 }} {{ hosts.h5 }} -u hacluster -p {{ PASS_HACLUSTER }}
+    pcs cluster setup --force --name back_cluster {{ hosts.h3 }} {{ hosts.h4 }} {{ hosts.h5 }}
+    pcs cluster start --all
+    pcs cluster enable --all
+    pcs property set no-quorum-policy={{ no_quorum_policy }}
+    pcs property set stonith-enabled=False
+    pcs property set symmetric-cluster={{ symmetric_cluster }}

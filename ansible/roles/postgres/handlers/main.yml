@@ -1,0 +1,16 @@
+---
+
+- name: enable postgresql
+  service: name=postgresql-14 enabled=yes
+
+- name: start postgresql
+  service: name=postgresql-14 state=started
+
+- name: stop postgresql
+  service: name=postgresql-14 state=stopped
+
+- name: restart postgresql
+  service: name=postgresql-14 state=restarted
+
+- name: reload postgresql
+  service: name=postgresql-14 state=reloaded

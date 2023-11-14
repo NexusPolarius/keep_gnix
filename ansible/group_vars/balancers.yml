@@ -1,0 +1,5 @@
+---
+
+ng_conf_bl1: 'default_bl1.conf'
+ng_conf_bl2: 'default_bl2.conf'
+keepalived_conf: 'keepalived.j2'

@@ -1,0 +1,14 @@
+---
+
+- name: add dlm clvm resource
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - "pcs resource create dlm systemd:dlm op monitor interval=30s on-fail=ignore clone clone-max=2 clone-node-max=1 interleave=true ordered=true"
+    - "pcs resource create clvmd ocf:heartbeat:clvm op monitor interval=30s on-fail=ignore clone lone-max=2 clone-node-max=1 interleave=true ordered=true"
+    - "pcs constraint order start dlm-clone then clvmd-clone"
+    - "pcs constraint location dlm-clone avoids {{ hosts.h5 }}=INFINITY"
+    - "pcs constraint location clvmd-clone avoids {{ hosts.h5 }}=INFINITY"
+    - "pcs constraint location dlm-clone prefers {{ hosts.h3 }}=100"
+    - "pcs constraint location dlm-clone prefers {{ hosts.h4 }}=100"
+    - "pcs constraint location clvmd-clone prefers {{ hosts.h3 }}=100"
+    - "pcs constraint location clvmd-clone prefers {{ hosts.h4 }}=100"

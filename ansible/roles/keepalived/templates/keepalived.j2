@@ -1,0 +1,32 @@
+vrrp_script check_nginx {
+  script "/bin/check_nginx.sh"
+  interval 2
+  weight 50
+}
+
+vrrp_instance VRRP {
+    state  Backup
+    interface eth2
+    track_interface {
+        eth2
+    }
+     
+    track_script {
+        check_nginx
+    }
+       
+    virtual_router_id 1
+    nopreempt
+
+    priority 100
+
+    authentication {
+        auth_type PA$$
+        auth_pass 1234
+    }
+
+
+    virtual_ipaddress {
+        {{ ip.vip }}/21 dev eth2
+    }
+}

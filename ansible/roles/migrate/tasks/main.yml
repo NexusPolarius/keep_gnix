@@ -1,0 +1,26 @@
+---
+
+- name: Create a directory for static
+  ansible.builtin.file:
+    path: /mnt/project_files/static
+    state: directory
+    mode: '0777'
+
+- name: Create a directory for media
+  ansible.builtin.file:
+    path: /mnt/project_files/media
+    state: directory
+    mode: '0777'
+
+- name: migrate database
+  django_manage: command=migrate app_path={{ project_homedir }}
+- name: collectstatic
+  django_manage: command=collectstatic app_path={{ project_homedir }}
+- name: add ingredients
+  django_manage: command=add_ingredients app_path={{ project_homedir }}
+- name: add tags
+  django_manage: command=add_tags app_path={{ project_homedir }}
+  
+- name: full access
+  shell: "chmod -R 0777 /mnt/project_files"
+  

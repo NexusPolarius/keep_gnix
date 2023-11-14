@@ -1,0 +1,20 @@
+---
+- name: install pcs, pacemaker, corosync
+  yum:
+    name:
+      - pcs
+      - pacemaker
+      - corosync
+      - fence-agents-all
+    state: latest
+
+- name: change password for hacluster user
+  user: 
+    name: 'hacluster'
+    password: "{{ PASS_HACLUSTER | password_hash('sha512') }}"
+
+- name: start pcsd.service
+  systemd:
+    name: pcsd
+    state: started
+    enabled: yes

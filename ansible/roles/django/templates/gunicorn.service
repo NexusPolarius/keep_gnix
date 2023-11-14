@@ -1,0 +1,17 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=vagrant
+WorkingDirectory=/home/vagrant/code
+ExecStart=/usr/bin/gunicorn \
+          --access-logfile - \
+          --workers 1 \
+          --bind unix:/run/gunicorn.sock \
+          --bind=127.0.0.1:8000 --bind=[::1]:8000 \
+          foodgram.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

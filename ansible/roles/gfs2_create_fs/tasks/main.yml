@@ -1,0 +1,21 @@
+---
+
+- name: create LVM
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - "pvcreate /dev/sdb"
+    - "vgcreate -Ay -cy cluster_vg /dev/sdb"
+    - "lvcreate -n cluster_lv -l 100%FREE cluster_vg"
+     
+- name: create gfs2 FS
+  shell: "echo 'y' | mkfs.gfs2 -j 2 -p lock_dlm -t back_cluster:gfs2 /dev/cluster_vg/cluster_lv"
+  
+- name: create resource gfs2 FS
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - 'pcs resource create clusterfs Filesystem device="/dev/cluster_vg/cluster_lv" directory="/mnt/project_files" fstype="gfs2" "options=noatime" op monitor interval=10s on-fail=ignore clone clone-max=2 clone-node-max=1 interleave=true'
+    - "pcs constraint order start clvmd-clone then clusterfs-clone"
+    - "pcs constraint location clusterfs-clone avoids {{ hosts.h5 }}=INFINITY"
+    - "pcs constraint location clusterfs-clone prefers {{ hosts.h3 }}=100"
+    - "pcs constraint location clusterfs-clone prefers {{ hosts.h4 }}=100"
+    - "pcs property set stonith-enabled={{ stonith_enabled }}"

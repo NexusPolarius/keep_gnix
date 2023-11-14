@@ -1,0 +1,22 @@
+---
+
+- name: Install keepalived
+  yum: name=keepalived
+  
+- name: Template a file to /etc/keepalived/keepalived.conf
+  ansible.builtin.template:
+    src: templates/{{ keepalived_conf }}
+    dest: /etc/keepalived/keepalived.conf
+
+- name: Template a file to /bin/check_nginx.sh
+  ansible.builtin.template:
+    src: templates/check_nginx.sh
+    dest: /bin/check_nginx.sh
+    mode: '0755'
+    
+- name: run commands
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - "sysctl net.ipv4.ip_nonlocal_bind=1"
+    - "systemctl enable keepalived.service"
+    - "systemctl start keepalived.service" 

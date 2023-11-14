@@ -1,0 +1,67 @@
+---
+
+- name: Install epel-release
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - epel-release
+
+- name: yum update
+  yum:
+    update_cache: yes
+
+- name: Install required packages
+  yum:
+    name:
+      - python3-psycopg2
+      - python-psycopg2
+      - acl
+    state: latest
+
+- name: Add postgresql yum repository
+  yum:
+    name: http://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+
+- name: Install postgresql
+  yum:
+    name: postgresql14-server
+    state: present
+
+- name: enable postgresql
+  shell: |
+    /usr/pgsql-14/bin/postgresql-14-setup initdb
+    systemctl enable postgresql-14
+    systemctl start postgresql-14  
+
+- name: Ensure PostgreSQL is listening on *
+  lineinfile:
+    dest: /var/lib/pgsql/14/data/postgresql.conf
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses='*'"
+    state: present
+  notify: restart postgresql
+
+- name: Add new configuration to "pg_hba.conf"
+  blockinfile:
+    dest: /var/lib/pgsql/14/data/pg_hba.conf
+    block: |
+      host    all             all             0.0.0.0/0                trust
+      host    all             all             ::/0                     trust
+  notify: restart postgresql
+
+- name: Change peer identification to trust
+  shell: /bin/sed -i '/^local/s/peer/trust/' /var/lib/pgsql/14/data/pg_hba.conf
+  notify: restart postgresql
+
+- name: Create a Superuser PostgreSQL database user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_password }}'
+    role_attr_flags: CREATEDB,SUPERUSER,CREATEROLE
+    encrypted: yes
+    state: present

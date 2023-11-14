@@ -1,0 +1,6 @@
+---
+
+- name: connect nodes to target
+  shell: |
+    iscsiadm -m discovery -t st -p {{ ip.storage }}
+    iscsiadm -m node -l -T iqn.2023-09.otus:storage.target00

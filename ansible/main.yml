@@ -1,0 +1,100 @@
+---
+
+- name: nodes config
+  hosts: balancers, backend, database
+  become: true
+  
+  roles:
+    - { role: nodes_config, tags: [nodes config] }
+    
+    
+- name: install pmk and fence tools
+  hosts: backend
+  become: true
+  
+  roles:
+    - { role: pmk_install, tags: [install pcs pacemaker corosync] }
+    - { role: fence_agents, tags: [build fance agent] }
+
+
+- name: install open iscsi, clvm, gfs2
+  hosts: back1, back2
+  become: true
+  
+  roles:
+    - { role: open_iscsi, tags: [install and config iscsi on backend] }
+    - { role: clvm_gfs2, tags: [install clvm and gfs2-utils on backend] }
+
+
+- name: create pmk cluster
+  hosts: back1
+  become: true
+
+  roles:
+    - { role: pmk_create_cls, tags: [create cluster] }
+    - { role: fence_resource, tags: [add fence resource] }
+    - { role: dlm_clvm_resource, tags: [add dlm clvm resource] }
+
+
+- name: configure target
+  hosts: storage
+  become: true
+  
+  roles:
+    - { role: target, tags: [configure target] }
+
+    
+- name: connect to target
+  hosts: back1, back2
+  become: true
+  
+  roles:
+    - { role: connect_targ, tags: [connect nodes to target] }
+
+
+- name: create gfs2 FS
+  hosts: back1
+  become: true
+
+  roles:
+    - { role: gfs2_create_fs, tags: [create gfs2 FS] }
+
+
+- name: install psql
+  hosts: 
+    db
+  become: True
+  
+  roles:
+    - { role: postgres, tags: [install postgres] }
+ 
+ 
+- name: install backend
+  hosts: 
+    back1, back2
+  become: True
+  
+  roles:
+    - { role: nginx, tags: [install nginx] }
+    - { role: django, tags: [install django project] }
+
+
+- name: run migrate
+  hosts: 
+    back1
+  become: True
+  
+  roles:
+    - { role: migrate, tags: [migrate] }
+
+
+- name: install and config balancers
+  hosts: 
+    balancers
+  become: True
+  
+  roles:
+    - { role: nginx, tags: [install nginx] }
+    - { role: keepalived, tags: [install keepalived] }
+   
+...

@@ -1,0 +1,14 @@
+---
+- name: install clvm, gfs2-utils
+  yum:
+    name:
+      - lvm2-cluster
+      - gfs2-utils
+    state: latest
+    
+    
+- name: Create a directory for mount FS
+  ansible.builtin.file:
+    path: /mnt/project_files
+    state: directory
+    mode: '0777'

@@ -1,0 +1,23 @@
+---
+
+PASS_HACLUSTER: 'hacluster'
+
+no_quorum_policy: stop
+stonith_enabled: true
+symmetric_cluster: false
+
+initiatorname_tml_1: 'initiatorname.iscsi_1.j2'
+initiatorname_tml_2: 'initiatorname.iscsi_2.j2'
+initiatorname_file: /etc/iscsi/initiatorname.iscsi
+
+initiatorname_back1: iqn.2023-09.org.debian:01:back1 #iqn должен быть такой же как в шаблоне 'initiatorname.iscsi_1.j2'
+initiatorname_back2: iqn.2023-09.org.debian:01:back2 #iqn должен быть такой же как в шаблоне 'initiatorname.iscsi_2.j2'
+
+virtualbox_host: 192.168.56.1
+virtualbox_host_username: tru
+virtualbox_host_password: tutu
+
+project_homedir: '/home/vagrant/code'
+
+ng_conf_bk1: 'default_bk1.conf'
+ng_conf_bk2: 'default_bk2.conf'

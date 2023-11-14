@@ -1,0 +1,22 @@
+---
+    
+- name: set hostname
+  ansible.builtin.hostname:
+    name: "{{ ansible_hostname }}"    
+
+- name: copy hosts file
+  template: src=templates/{{ hosts_tml }} dest={{ hosts_file }}
+
+- name: Install epel-release
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - epel-release
+
+- name: yum update
+  yum:
+    update_cache: yes
+    
+...

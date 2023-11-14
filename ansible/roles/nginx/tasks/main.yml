@@ -1,0 +1,28 @@
+---
+
+- name: Install nginx
+  yum: name=nginx
+  
+- name: restart nginx
+  service: name=nginx enabled=yes
+
+- name: copy nginx config file
+  template: src=templates/{{ ng_conf_bk1 }} dest={{ nginx_conf_file }}
+  when: inventory_hostname == "back1"
+  
+- name: copy nginx config file
+  template: src=templates/{{ ng_conf_bk2 }} dest={{ nginx_conf_file }}
+  when: inventory_hostname == "back2"
+  
+- name: copy nginx config file
+  template: src=templates/{{ ng_conf_bl1 }} dest={{ nginx_conf_file }}
+  when: inventory_hostname == "gnix1"
+  
+- name: copy nginx config file
+  template: src=templates/{{ ng_conf_bl2 }} dest={{ nginx_conf_file }}
+  when: inventory_hostname == "gnix2"
+
+- name: restart nginx
+  service: name=nginx state=restarted
+
+
